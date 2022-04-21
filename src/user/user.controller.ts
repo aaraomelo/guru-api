@@ -23,9 +23,22 @@ export class UserController {
     });
   }
 
-  @Get(':id')
-  async getFilteredPosts(@Param('id') id: string): Promise<UserModel> {
-    return this.userService.user({ id: Number(id) });
+  @Get('filtered-users/:searchString')
+  async getFilteredUsers(
+    @Param('searchString') searchString: string,
+  ): Promise<UserModel[]> {
+    return this.userService.users({
+      where: {
+        OR: [
+          {
+            name: { contains: searchString },
+          },
+          {
+            email: { contains: searchString },
+          },
+        ],
+      },
+    });
   }
 
   @Post()
