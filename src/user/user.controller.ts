@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User as UserModel } from '@prisma/client';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -41,13 +43,13 @@ export class UserController {
 
   @Post()
   async signupUser(
-    @Body() userData: { name: string; email: string, password: string },
+    @Body() userData: CreateUserDto,
   ): Promise<UserModel> {
     return this.userService.createUser(userData);
   }
 
   @Put(':id')
-  async updateUser(@Param('id') id: string, @Body() userData: UserModel): Promise<UserModel> {
+  async updateUser(@Param('id') id: string, @Body() userData: UpdateUserDto): Promise<UserModel> {
     return this.userService.updateUser({
       where: { id: Number(id) },
       data: { ...userData },
