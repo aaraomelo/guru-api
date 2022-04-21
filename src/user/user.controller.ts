@@ -6,6 +6,7 @@ import {
   Body,
   Put,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User as UserModel } from '@prisma/client';
@@ -17,29 +18,26 @@ export class UserController {
   ) { }
 
   @Get()
-  async getPublishedPosts(): Promise<UserModel[]> {
+  async getAllUsers(): Promise<UserModel[]> {
     return this.userService.users({
       where: {},
     });
   }
 
   @Get('filtered-users/:searchString')
-  async getFilteredUsers(
+  async getUserListWithCursor(
     @Param('searchString') searchString: string,
+    @Query('take') take: string,
+    @Query('cursor') cursor: string
   ): Promise<UserModel[]> {
-    return this.userService.users({
-      where: {
-        OR: [
-          {
-            name: { contains: searchString },
-          },
-          {
-            email: { contains: searchString },
-          },
-        ],
+    return this.userService.getCursorPaginationList(
+      {
+        take: Number(take),
+        cursor: { id: Number(cursor) }
       },
-    });
-  }
+      searchString
+    )
+  };
 
   @Post()
   async signupUser(

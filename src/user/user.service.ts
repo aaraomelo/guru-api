@@ -53,4 +53,29 @@ export class UserService {
       where,
     });
   }
+
+  async getCursorPaginationList(params: {
+    take?: number;
+    cursor?: Prisma.UserWhereUniqueInput;
+  }, searchString: string): Promise<User[]> {
+    const { take, cursor } = params;
+
+    return this.prisma.user.findMany({
+      take,
+      cursor,
+      where: {
+        OR: [
+          {
+            name: { contains: searchString },
+          },
+          {
+            email: { contains: searchString },
+          },
+        ],
+      },
+      orderBy: {
+        id: 'asc',
+      },
+    })
+  }
 }
